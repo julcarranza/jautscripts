@@ -1,0 +1,15 @@
+---
+inter1:
+  name: 'ge-0/0/3'
+  unit: 0
+  family: inet
+  address: 172.17.3.1
+  mask: 31
+inter2:
+  name: 'ge-0/0/4'
+  unit: 0
+  family: inet
+  address: 172.17.4.1
+  mask: 31
+
+area: 0.0.0.0

@@ -1,0 +1,29 @@
+interfaces {
+  {{ inter1.name}} {
+    unit {{inter1.unit}} {
+      family {{inter1.family}} {
+        address {{inter1.address}}/{{inter1.mask}};
+      }
+    }
+  }
+}
+interfaces {
+  {{ inter2.name}} {
+    unit {{inter2.unit}} {
+      family {{inter2.family}} {
+        address {{inter2.address}}/{{inter2.mask}};
+      }
+    }
+  }
+}
+
+protocols {
+  ospf {
+    area {{area}}{
+      interface {{ inter1.name}}.{{inter1.unit}};
+      interface {{ inter2.name}}.{{inter2.unit}};
+    }
+  }
+
+
+}

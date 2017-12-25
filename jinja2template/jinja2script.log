@@ -1,0 +1,50 @@
+jcarranza% python j2script.py
+Configuration for r3-core01
+
+[edit interfaces]
++   ge-0/0/3 {
++       unit 0 {
++           family inet {
++               address 172.17.3.1/31;
++           }
++       }
++   }
++   ge-0/0/4 {
++       unit 0 {
++           family inet {
++               address 172.17.4.1/31;
++           }
++       }
++   }
+[edit protocols]
++   ospf {
++       area 0.0.0.0 {
++           interface ge-0/0/3.0;
++           interface ge-0/0/4.0;
++       }
++   }
+
+Configuration for r7-pe01
+
+[edit interfaces]
++   ge-1/1/0 {
++       unit 0 {
++           family inet {
++               address 172.17.10.1/31;
++           }
++       }
++   }
++   ge-1/1/1 {
++       unit 0 {
++           family inet {
++               address 172.17.11.1/31;
++           }
++       }
++   }
+[edit protocols]
++   ospf {
++       area 0.0.0.0 {
++           interface ge-1/1/0.0;
++           interface ge-1/1/1.0;
++       }
++   }
