@@ -1,0 +1,30 @@
+---
+- name: ROllback config
+  hosts: vmx_devices
+  roles:
+  - Juniper.junos
+  connection: local
+  gather_facts: no
+  
+  vars_prompt:
+   - name: USERNAME
+     prompt: User name
+     private: no
+   - name: DEVICE_PASSWORD
+     prompt: Device password
+     private: yes
+     
+  tasks:
+   - name: Rollback Configuration
+     junos_rollback:
+       host={{inventory_hostname}}
+       port=22
+       user={{USERNAME}}
+       passwd={{DEVICE_PASSWORD}}
+       
+       logfile=rollback.log
+       diffs_file="rollback.diff"
+       rollback=1
+       comment="Rolled back by Ansible"
+       
+       

@@ -1,0 +1,25 @@
+---
+- name: Ping from a Junos Device
+  hosts: vmx_devices
+  roles:
+  - Juniper.junos
+  connection: local
+  gather_facts: no
+  
+  vars_prompt:
+   - name: USERNAME
+     prompt: User name
+     private: no
+   - name: DEVICE_PASSWORD
+     prompt: Device password
+     private: yes
+     
+  tasks:
+   - name: Execute ping peer
+     junos_ping:
+       host={{inventory_hostname}}
+       port=22
+       user={{USERNAME}}
+       passwd={{DEVICE_PASSWORD}}
+       dest_ip=206.49.178.35
+       

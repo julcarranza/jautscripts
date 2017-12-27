@@ -1,0 +1,335 @@
+﻿jcarranza@andres:/usr/bin$ sudo ansible-galaxy install Juniper.junos --force
+[sudo] password for jcarranza:
+- changing role Juniper.junos from 1.4.3 to unspecified
+- downloading role 'junos', owned by Juniper
+- downloading role from https://github.com/Juniper/ansible-junos-stdlib/archive/1.4.3.tar.gz
+- extracting Juniper.junos to /etc/ansible/roles/Juniper.junos
+- Juniper.junos (1.4.3) was installed successfully
+jcarranza@andres:/usr/bin$ ansible-galaxy list
+
+
+Usage: ansible-galaxy list [role_name]
+
+
+Options:
+  -h, --help                show this help message and exit
+  -c, --ignore-certs        Ignore SSL certificate validation errors.
+  -p ROLES_PATH, --roles-path=ROLES_PATH
+                            The path to the directory containing your roles. The
+                            default is the roles_path configured in your
+                            ansible.cfgfile (/etc/ansible/roles if not configured)
+  -s API_SERVER, --server=API_SERVER
+                            The API server destination
+  -v, --verbose             verbose mode (-vvv for more, -vvvv to enable
+                            connection debugging)
+  --version                 show program's version number and exit
+
+
+ See 'ansible-galaxy <command> --help' for more information on a specific
+command.
+ERROR! - the path /home/jcarranza/.ansible/roles does not exist. Please specify a valid path with --roles-path
+jcarranza@andres:/usr/bin$
+jcarranza@andres:/usr/bin$ sudo vi  /etc/ansible/ansible.cfg
+jcarranza@andres:/usr/bin$ ansible-galaxy list
+- Juniper.junos, 1.4.3
+jcarranza@andres:/usr/bin$ cat /etc/ansible/ansible.cfg | grep role
+# additional paths to search for roles in, colon separated
+roles_path        = /etc/ansible/roles
+# by default, variables from roles will be visible in the global variable
+# tasks and handlers within the role will see the variables there
+#private_role_vars = yes
+jcarranza@andres:/usr/bin$ lsb_release -a
+No LSB modules are available.
+Distributor ID:    Ubuntu
+Description:    Ubuntu 16.04.3 LTS
+Release:    16.04
+Codename:    xenial
+jcarranza@andres:/usr/bin$ ansible --version
+ansible 2.4.2.0
+  config file = /etc/ansible/ansible.cfg
+  configured module search path = [u'/home/jcarranza/.ansible/plugins/modules', u'/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/lib/python2.7/dist-packages/ansible
+  executable location = /usr/bin/ansible
+  python version = 2.7.12 (default, Nov 20 2017, 18:23:56) [GCC 5.4.0 20160609]
+jcarranza@andres:/usr/bin$
+
+
+
+
+
+
+jcarranza@andres:~/Documents$ ansible-playbook  helloworld.yml
+User name: jcarranza
+Device password:
+
+
+PLAY [Get Junos Device Facts] ***********************************************************************
+
+
+TASK [Checking NETCONF connectivity] ****************************************************************
+ok: [10.92.38.57]
+ok: [10.92.37.241]
+
+
+TASK [Retrieve Junos OS Facts] **********************************************************************
+fatal: [10.92.38.57]: FAILED! => {"changed": false, "msg": "junos-eznc >= 2.1.2 is required for this module"}
+fatal: [10.92.37.241]: FAILED! => {"changed": false, "msg": "junos-eznc >= 2.1.2 is required for this module"}
+    to retry, use: --limit @/home/jcarranza/Documents/helloworld.retry
+
+
+PLAY RECAP ******************************************************************************************
+10.92.37.241                   : ok=1        changed=0        unreachable=0        failed=1   
+10.92.38.57                    : ok=1        changed=0        unreachable=0        failed=1   
+
+
+jcarranza@andres:~/Documents$ cat /etc/ansible/ansible.cfg | grep all:vars
+jcarranza@andres:~/Documents$ cat /etc/ansible/ansible.cfg | grep ansible_python_interpreter
+jcarranza@andres:~/Documents$ sudo vi /etc/ansible/ansible.cfg
+jcarranza@andres:~/Documents$ cat /etc/ansible/ansible.cfg | grep all:vars
+[all:vars]
+jcarranza@andres:~/Documents$ cat /etc/ansible/ansible.cfg | grep ansible_python_interpreter
+ansible_python_interpreter=/usr/bin/python
+jcarranza@andres:~/Documents$
+
+
+I have to update Junos 
+
+
+>>> from jnpr.junos import Device
+>>> from jnpr.junos.version import VERSION
+>>> VERSION
+'2.0.1'
+
+
+
+
+sudo pip install -U junos-eznc
+
+
+>>> from jnpr.junos import Device
+>>> from jnpr.junos.version import VERSION
+>>> VERSION
+'2.1.7'
+
+
+j
+
+
+
+
+
+
+
+
+jcarranza@andres:~/Documents$ sudo ansible-playbook helloworld.yml
+User name: jcarranza
+Device password:
+
+
+PLAY [Get Junos Device Facts] **************************************************
+
+
+TASK [Checking NETCONF connectivity] *******************************************
+ok: [10.92.38.57]
+ok: [10.92.37.241]
+
+
+TASK [Retrieve Junos OS Facts] *************************************************
+ok: [10.92.37.241]
+ok: [10.92.38.57]
+
+
+TASK [Display Junos Facts] *****************************************************
+ok: [10.92.38.57] => {
+        "msg": "Hostname:R3-BX01, Model:MX960, Version:17.2X75-D90.1"
+}
+ok: [10.92.37.241] => {
+        "msg": "Hostname:R7-MX2020-DR01, Model:MX960, Version:17.2X75-D90.1"
+}
+
+
+PLAY RECAP *********************************************************************
+10.92.37.241                   : ok=3        changed=0        unreachable=0        failed=0   
+10.92.38.57                    : ok=3        changed=0        unreachable=0        failed=0
+
+
+--------
+
+
+jcarranza@andres:~/Documents$ sudo ansible-playbook pingfromjunos.yml
+User name: jcarranza
+Device password:
+
+
+PLAY [Ping from a Junos Device] ************************************************
+
+
+TASK [Execute ping peer] *******************************************************
+ok: [10.92.38.57]
+fatal: [10.92.37.241]: FAILED! => {"changed": false, "count": "5", "dest_ip": "206.49.178.35", "do_not_fragment": false, "msg": "Loss 100% packets, (Sent 5 | Received 0)", "packet_loss": "100", "packets_received": "0", "packets_sent": "5", "rapid": true}
+    to retry, use: --limit @/home/jcarranza/Documents/pingfromjunos.retry
+
+
+PLAY RECAP *********************************************************************
+10.92.37.241                   : ok=0        changed=0        unreachable=0        failed=1   
+10.92.38.57                    : ok=1        changed=0        unreachable=0        failed=0 
+
+
+------
+jcarranza@andres:~/Documents$ sudo ansible-playbook rpcfromjunos.yml
+User name: jcarranza
+Device password:
+
+
+PLAY [Issue Junos RPCs] ********************************************************
+
+
+TASK [Get interfaces information] **********************************************
+changed: [10.92.37.241]
+changed: [10.92.38.57]
+
+
+PLAY RECAP *********************************************************************
+10.92.37.241                   : ok=1        changed=1        unreachable=0        failed=0   
+10.92.38.57                    : ok=1        changed=1        unreachable=0        failed=0   
+
+
+
+
+jcarranza@andres:~/Documents$ ls get_interface_information.conf -al
+-rw-r--r-- 1 root root 8258 Dec 26 17:44 get_interface_information.conf
+
+
+----
+
+
+
+
+jcarranza@andres:~/Documents$ sudo ansible-playbook configromjunos.yml
+User name: jcarranza
+Device password:
+
+
+PLAY [Issue Junos RPCs] ********************************************************
+
+
+TASK [Install Junos Configuration] *********************************************
+ok: [10.92.38.57]
+ok: [10.92.37.241]
+
+
+PLAY RECAP *********************************************************************
+10.92.37.241                   : ok=1        changed=0        unreachable=0        failed=0   
+10.92.38.57                    : ok=1        changed=0        unreachable=0        failed=0   
+
+
+jcarranza@andres:~/Documents$ more diff.log
+
+
+[edit interfaces]
++   ge-1/1/7 {
++           unit 0 {
++               family inet {
++                   address 172.17.1.4/24;
++               }
++           }
++   }
++   ge-1/1/8 {
++           unit 0 {
++               family inet {
++                   address 172.17.4.4/24;
++               }
++           }
++   }
+[edit]
++  routing-instances {
++          vmx1 {
++              instance-type virtual-router;
++              interface ge-1/0/7.0;
++              interface ge-1/0/8.0;
++          }
++  }
+-----
+jcarranza@andres:~/Documents$ sudo ansible-playbook rollbackromjunos.yml
+User name: jcarranza
+Device password:
+
+
+PLAY [ROllback config] *********************************************************
+
+
+TASK [Rollback Configuration] **************************************************
+changed: [10.92.38.57]
+changed: [10.92.37.241]
+
+
+PLAY RECAP *********************************************************************
+10.92.37.241                   : ok=1        changed=1        unreachable=0        failed=0   
+10.92.38.57                    : ok=1        changed=1        unreachable=0        failed=0   
+
+
+jcarranza@andres:~/Documents$ more rollback.log
+2017-12-26 18:34:10,397:CONFIG:10.92.37.241:connecting to host: jcarranza@10.92.
+37.241:22
+2017-12-26 18:34:10,402:CONFIG:10.92.38.57:connecting to host: jcarranza@10.92.3
+8.57:22
+2017-12-26 18:34:10,480:ncclient.transport.ssh:Connected (version 2.0, client Op
+enSSH_6.9)
+2017-12-26 18:34:10,495:ncclient.transport.ssh:Connected (version 2.0, client Op
+enSSH_6.9)
+2017-12-26 18:34:20,172:ncclient.transport.ssh:Authentication (password) success
+ful!
+2017-12-26 18:34:20,172:ncclient.transport.ssh:Authentication (password) success
+ful!
+2017-12-26 18:34:20,578:ncclient.transport.session:initialized: session-id=92611
+ | server_capabilities=<dictionary-keyiterator object at 0x7fc886d0bc00>
+2017-12-26 18:34:20,579:CONFIG:10.92.37.241:taking lock
+2017-12-26 18:34:20,579:ncclient.operations.rpc:Requesting 'ExecuteRpc'
+2017-12-26 18:34:20,599:ncclient.transport.session:initialized: session-id=94755
+ | server_capabilities=<dictionary-keyiterator object at 0x7fc8898b5c00>
+2017-12-26 18:34:20,599:CONFIG:10.92.38.57:taking lock
+2017-12-26 18:34:20,599:ncclient.operations.rpc:Requesting 'ExecuteRpc'
+2017-12-26 18:34:20,695:CONFIG:10.92.37.241:Rolling back to: 1
+2017-12-26 18:34:20,696:ncclient.operations.rpc:Requesting 'ExecuteRpc'
+2017-12-26 18:34:20,720:CONFIG:10.92.38.57:Rolling back to: 1
+2017-12-26 18:34:20,720:ncclient.operations.rpc:Requesting 'ExecuteRpc'
+2017-12-26 18:34:21,405:ncclient.operations.rpc:Requesting 'ExecuteRpc'
+2017-12-26 18:34:22,348:CONFIG:10.92.38.57:committing change, please be patient
+2017-12-26 18:34:22,348:ncclient.operations.rpc:Requesting 'ExecuteRpc'
+2017-12-26 18:34:25,751:CONFIG:10.92.38.57:change completed
+2017-12-26 18:34:25,751:CONFIG:10.92.38.57:unlocking
+2017-12-26 18:34:25,751:ncclient.operations.rpc:Requesting 'ExecuteRpc'
+2017-12-26 18:34:25,872:ncclient.operations.rpc:Requesting 'CloseSession'
+2017-12-26 18:34:29,526:ncclient.operations.rpc:Requesting 'ExecuteRpc'
+2017-12-26 18:34:42,940:CONFIG:10.92.37.241:committing change, please be patient
+2017-12-26 18:34:42,941:ncclient.operations.rpc:Requesting 'ExecuteRpc'
+2017-12-26 18:35:06,589:CONFIG:10.92.37.241:change completed
+2017-12-26 18:35:06,589:CONFIG:10.92.37.241:unlocking
+2017-12-26 18:35:06,589:ncclient.operations.rpc:Requesting 'ExecuteRpc'
+2017-12-26 18:35:06,713:ncclient.operations.rpc:Requesting 'CloseSession'
+jcarranza@andres:~/Documents$  more rollback.diff
+
+
+[edit interfaces]
+-   ge-1/1/7 {
+-           unit 0 {
+-               family inet {
+-                   address 172.17.1.4/24;
+-               }
+-           }
+-   }
+-   ge-1/1/8 {
+-           unit 0 {
+-               family inet {
+-                   address 172.17.4.4/24;
+-               }
+-           }
+-   }
+[edit]
+-  routing-instances {
+-          vmx1 {
+-              instance-type virtual-router;
+-              interface ge-1/0/7.0;
+-              interface ge-1/0/8.0;
+-          }
+-  }

@@ -1,0 +1,28 @@
+---
+- name: Issue Junos RPCs
+  hosts: vmx_devices
+  roles:
+  - Juniper.junos
+  connection: local
+  gather_facts: no
+  
+  vars_prompt:
+   - name: USERNAME
+     prompt: User name
+     private: no
+   - name: DEVICE_PASSWORD
+     prompt: Device password
+     private: yes
+     
+  tasks:
+   - name: Install Junos Configuration
+     junos_install_config:
+       host={{inventory_hostname}}
+       port=22
+       user={{USERNAME}}
+       passwd={{DEVICE_PASSWORD}}
+       
+       file="vmx1.conf"
+       diffs_file="diff.log"
+       
+       
